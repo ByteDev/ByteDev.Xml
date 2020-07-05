@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.Linq;
+using System.Xml;
 
 namespace ByteDev.Xml
 {
@@ -14,15 +15,7 @@ namespace ByteDev.Xml
             if (string.IsNullOrEmpty(value))
                 return value;
 
-            var buffer = new StringBuilder(value.Length);
-
-            foreach (char ch in value)
-            {
-                if (CharExtensions.IsLegalXmlChar(ch))
-                    buffer.Append(ch);
-            }
-
-            return buffer.ToString();
+            return new string(value.Where(XmlConvert.IsXmlChar).ToArray());
         }
     }
 }

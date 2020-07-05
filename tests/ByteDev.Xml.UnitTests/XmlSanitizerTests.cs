@@ -5,7 +5,7 @@ namespace ByteDev.Xml.UnitTests
     public static class XmlSanitizerTests
     {
         [TestFixture]
-        public class SanitizeForXml
+        public class Sanitize
         {
             [Test]
             public void WhenIsNull_ThenReturnNull()
@@ -26,12 +26,13 @@ namespace ByteDev.Xml.UnitTests
             [Test]
             public void WhenHasIllegalChars_ThenRemoveIllegalChars()
             {
-                const string illegalChar = "\u0008";
-                const string s = "this {0} that {0} this";
+                char illegalChar = '\0';
 
-                var result = XmlSanitizer.Sanitize(s.FormatWith(illegalChar));
+                string s = $"this {illegalChar} that {illegalChar} this";
 
-                Assert.That(result, Is.EqualTo(s.FormatWith("")));
+                var result = XmlSanitizer.Sanitize(s);
+
+                Assert.That(result, Is.EqualTo("this  that  this"));
             }
         }
     }
