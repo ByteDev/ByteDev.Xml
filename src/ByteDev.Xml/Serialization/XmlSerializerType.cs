@@ -9,6 +9,7 @@ namespace ByteDev.Xml.Serialization
         /// Represents System.Xml.Serialization.XmlSerializer
         /// </summary>
         Xml,
+
         /// <summary>
         /// Represents System.Runtime.Serialization.DataContractSerializer
         /// </summary>

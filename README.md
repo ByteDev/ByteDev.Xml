@@ -24,3 +24,102 @@ Full details of the release notes can be viewed on [GitHub](https://github.com/B
 
 ## Usage
 
+XDocument Extensions:
+
+- IsRootName
+
+XElement Extensions:
+
+- GetChildElement
+- GetChildElements
+- GetChildElementValue
+- GetAttributeValue
+- HasDescendants
+
+String Extensions:
+
+- IsXml
+- ContainsOnlyXmlChars
+
+---
+
+### XmlDataSerializer
+
+`XmlDataSerializer` can be used for XML serialization (System.Xml.Serialization.XmlSerializer) or 
+XML data contract serialization (System.Runtime.Serialization.DataContractSerializer).
+
+Example of serialize/deserialize using XML serializer:
+
+```csharp
+[XmlRoot("product")]
+public class ProductXml
+{
+    [XmlElement("code")]
+    public string Code { get; set; }
+
+    [XmlElement("name")]
+    public string Name { get; set; }
+}
+
+// ...
+
+var product = new ProductXml { Code = "code1", Name = "name1" };
+
+IXmlDataSerializer serializer = new XmlDataSerializer(XmlSerializerType.Xml);
+
+var xml = serializer.Serialize(product);
+
+var p = serializer.Deserialize<ProductXml>(xml);
+```
+
+Example of serialize/deserialize using data contract serializer:
+
+```csharp
+[DataContract]
+public class ProductContract
+{
+    [DataMember] 
+    public string Code { get; set; }
+
+    [DataMember] 
+    public string Name { get; set; }
+}
+
+// ...
+
+var product = new ProductContract { Code = "code1", Name = "name1" };
+
+IXmlDataSerializer serializer = new XmlDataSerializer(XmlSerializerType.DataContract);
+
+var xml = serializer.Serialize(product);
+
+var p = serializer.Deserialize<ProductContract>(xml);
+```
+
+---
+
+### XmlEncoder
+
+Example of encoding a XML string:
+
+```csharp
+var result = XmlEncoder.Encode("Using & special 'entity'");
+
+// result == "Using &amp; special &apos;entity&apos;"
+```
+
+---
+
+### XmlSanitizer
+
+Example of removing illegal XML characters from a XML string:
+
+```csharp
+char illegalChar = '\0';
+
+string s = $"this {illegalChar} that {illegalChar} this";
+
+var result = XmlSanitizer.Sanitize(s);
+
+// result == "this  that  this"
+```

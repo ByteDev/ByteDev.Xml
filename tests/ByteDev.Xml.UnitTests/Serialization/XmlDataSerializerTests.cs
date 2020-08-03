@@ -7,7 +7,7 @@ using NUnit.Framework;
 namespace ByteDev.Xml.UnitTests.Serialization
 {
     [TestFixture]
-    public class XmlDataSerializerTest
+    public class XmlDataSerializerTests
     {
         protected ProductXml[] GetProductXmls()
         {
@@ -40,7 +40,7 @@ namespace ByteDev.Xml.UnitTests.Serialization
         }
  
         [TestFixture]
-        public class Serialize : XmlDataSerializerTest
+        public class Serialize : XmlDataSerializerTests
         {
             [Test]
             public void WhenArgIsNull_ThenThrowException()
@@ -90,7 +90,7 @@ namespace ByteDev.Xml.UnitTests.Serialization
         }
 
         [TestFixture]
-        public class Deserialize : XmlDataSerializerTest
+        public class Deserialize : XmlDataSerializerTests
         {
             [Test]
             public void WhenArgIsNull_ThenThrowException()

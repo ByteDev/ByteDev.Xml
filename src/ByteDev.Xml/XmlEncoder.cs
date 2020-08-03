@@ -7,15 +7,6 @@ namespace ByteDev.Xml
     /// </summary>
     public static class XmlEncoder
     {
-        private static class XmlPredefinedEntities
-        {
-            public const string DoubleQuote = "&quot;";
-            public const string Ampersand = "&amp;";
-            public const string Apostraphe = "&apos;";
-            public const string LessThan = "&lt;";
-            public const string GreaterThan = "&gt;";
-        }
-
         /// <summary>
         /// XML encode a string.
         /// </summary>
