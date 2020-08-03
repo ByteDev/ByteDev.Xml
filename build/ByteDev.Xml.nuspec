@@ -10,9 +10,9 @@
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>.NET Standard library of XML related functionality.</description>
     <tags>xml serializer serialization string</tags>
-	<projectUrl>https://github.com/ByteDev/ByteDev.Xml</projectUrl>
-	<icon>images\icon.png</icon>
-	<license type="file">LICENSE</license>
+    <projectUrl>https://github.com/ByteDev/ByteDev.Xml</projectUrl>
+    <icon>images\icon.png</icon>
+    <license type="file">LICENSE</license>
     <dependencies>
       <group targetFramework=".NETStandard2.0" />
     </dependencies>
@@ -20,7 +20,7 @@
   <files>
     <file src="..\src\ByteDev.Xml\bin\Release\netstandard2.0\ByteDev.Xml.dll" target="lib\netstandard2.0" />
     <file src="..\src\ByteDev.Xml\bin\Release\netstandard2.0\ByteDev.Xml.xml" target="lib\netstandard2.0" />
-	<file src="..\images\icon.png" target="images\" />
-	<file src="..\LICENSE*" target="" />
+    <file src="..\images\icon.png" target="images\" />
+    <file src="..\LICENSE*" target="" />
   </files>
 </package>
