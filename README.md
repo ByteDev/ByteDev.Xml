@@ -36,6 +36,10 @@ XElement Extensions:
 - GetAttributeValue
 - HasDescendants
 
+IEnumerable<XElement> Extensions:
+- GetChildElement
+- GetChildElements
+
 String Extensions:
 
 - IsXml
