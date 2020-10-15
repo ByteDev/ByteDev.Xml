@@ -11,25 +11,16 @@ namespace ByteDev.Xml.Serialization
         /// Serializes a object to a string.
         /// </summary>
         /// <param name="obj">Object to serialize.</param>
-        /// <returns>Serialized representation of <paramref name="obj" />.</returns>
-        string Serialize(object obj);
-
-        /// <summary>
-        /// Deserialize a serialized XML representation to type <typeparamref name="T" />.
-        /// </summary>
-        /// <typeparam name="T">Type to deserialize to.</typeparam>
-        /// <param name="bytes">Serialized XML string representation.</param>
         /// <param name="encoding">Encoding type to use.</param>
-        /// <returns>Deserialized type.</returns>
-        T Deserialize<T>(byte[] bytes, Encoding encoding);
+        /// <returns>Serialized representation of <paramref name="obj" />.</returns>
+        string Serialize(object obj, Encoding encoding = null);
 
         /// <summary>
         /// Deserialize a serialized representation to type <typeparamref name="T" />.
         /// </summary>
         /// <typeparam name="T">Type to deserialize to.</typeparam>
-        /// <param name="value">Serialized string representation.</param>
-        /// <param name="encoding">Encoding type used for the value.</param>
+        /// <param name="xml">Serialized string representation.</param>
         /// <returns>Deserialized type.</returns>
-        T Deserialize<T>(string value, Encoding encoding = null);
+        T Deserialize<T>(string xml);
     }
 }

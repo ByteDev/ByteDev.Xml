@@ -95,7 +95,9 @@ namespace ByteDev.Xml.UnitTests.Serialization
             [Test]
             public void WhenArgIsNull_ThenThrowException()
             {
-                Assert.Throws<ArgumentNullException>(() => CreateSut().Deserialize<ProductXml>(null));
+                var result = CreateSut().Deserialize<ProductXml>(null);
+
+                Assert.That(result, Is.EqualTo(default(ProductXml)));
             }
 
             [Test]

@@ -1,7 +1,9 @@
 using System;
 using System.IO;
+using System.Runtime.Serialization;
 using System.Text;
 using System.Xml;
+using System.Xml.Serialization;
 
 namespace ByteDev.Xml.Serialization
 {
@@ -10,7 +12,7 @@ namespace ByteDev.Xml.Serialization
     /// </summary>
     public class XmlDataSerializer : IXmlDataSerializer
     {
-        private readonly XmlSerializerAdaptor _xmlSerializerAdaptor;
+        private readonly XmlSerializerType _type;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="T:ByteDev.Xml.Serialization.XmlDataSerializer" /> class
@@ -26,27 +28,56 @@ namespace ByteDev.Xml.Serialization
         /// <param name="type">Type of serializer to use.</param>
         public XmlDataSerializer(XmlSerializerType type)
         {
-            _xmlSerializerAdaptor = new XmlSerializerAdaptor(type);
+            _type = type;
         }
 
         /// <summary>
         /// Serializes a object to a XML string.
         /// </summary>
         /// <param name="obj">Object to serialize.</param>
+        /// <param name="encoding">Encoding type to use.</param>
         /// <returns>Serialized XML representation of <paramref name="obj" />.</returns>
         /// <exception cref="T:System.ArgumentNullException"><paramref name="obj" /> is null.</exception>
-        public string Serialize(object obj)
+        public string Serialize(object obj, Encoding encoding = null)
         {
-            if(obj == null)
+            if (obj == null)
                 throw new ArgumentNullException(nameof(obj));
 
-            using (var memoryStream = new MemoryStream())
-            {
-                using (var reader = new StreamReader(memoryStream))
-                {
-                    _xmlSerializerAdaptor.Serialize(obj, memoryStream);
+            if (encoding == null)
+                encoding = Encoding.UTF8;
 
-                    return reader.ReadToEnd();
+            if (_type == XmlSerializerType.Xml)
+            {
+                var xmlWriterSettings = new XmlWriterSettings
+                {
+                    Encoding = encoding
+                };
+
+                using (var sw = new StringWriter())
+                {
+                    using (var xmlWriter = XmlWriter.Create(sw, xmlWriterSettings))
+                    {
+                        var xmlSerializer = new XmlSerializer(obj.GetType());
+
+                        xmlSerializer.Serialize(xmlWriter, obj);
+                    }
+
+                    return sw.ToString();
+                }
+            }
+            else
+            {
+                using (var memoryStream = new MemoryStream())
+                {
+                    using (var sr = new StreamReader(memoryStream))
+                    {
+                        var serializer = new DataContractSerializer(obj.GetType());
+
+                        serializer.WriteObject(memoryStream, obj);
+                        memoryStream.Position = 0;
+
+                        return sr.ReadToEnd();
+                    }
                 }
             }
         }
@@ -55,41 +86,35 @@ namespace ByteDev.Xml.Serialization
         /// Deserialize a serialized XML representation to type <typeparamref name="T" />.
         /// </summary>
         /// <typeparam name="T">Type to deserialize to.</typeparam>
-        /// <param name="value">Serialized XML string representation.</param>
-        /// <param name="encoding">Encoding type used for the value.</param>
+        /// <param name="xml">Serialized XML string representation.</param>
         /// <returns>Deserialized type.</returns>
-        /// <exception cref="T:System.ArgumentNullException"><paramref name="value" /> is null.</exception>
-        public T Deserialize<T>(string value, Encoding encoding = null)
+        public T Deserialize<T>(string xml)
         {
-            if (value == null)
-                throw new ArgumentNullException(nameof(value));
+            if (string.IsNullOrEmpty(xml))
+                return default;
 
-            if (encoding == null)
-                encoding = Encoding.UTF8;
-
-            var buffer = encoding.GetBytes(value);
-
-            return Deserialize<T>(buffer, Encoding.UTF8);
-        }
-
-        /// <summary>
-        /// Deserialize a serialized XML representation to type <typeparamref name="T" />.
-        /// </summary>
-        /// <typeparam name="T">Type to deserialize to.</typeparam>
-        /// <param name="bytes">Serialized XML string representation.</param>
-        /// <param name="encoding">Encoding type to use.</param>
-        /// <returns>Deserialized type.</returns>
-        /// <exception cref="T:System.ArgumentNullException"><paramref name="bytes" /> is null.</exception>
-        public T Deserialize<T>(byte[] bytes, Encoding encoding)
-        {
-            if (bytes == null)
-                throw new ArgumentNullException(nameof(bytes));
-
-            using (var memoryStream = new MemoryStream(bytes))
+            if (_type == XmlSerializerType.Xml)
             {
-                var reader = XmlDictionaryReader.CreateTextReader(memoryStream, encoding, new XmlDictionaryReaderQuotas(), null);
+                var xmlSerializer = new XmlSerializer(typeof(T));
 
-                return _xmlSerializerAdaptor.Deserialize<T>(reader);
+                using (var sr = new StringReader(xml))
+                {
+                    return (T)xmlSerializer.Deserialize(sr);
+                }
+            }
+            else
+            {
+                using(Stream stream = new MemoryStream()) 
+                {
+                    byte[] bytes = Encoding.UTF8.GetBytes(xml);
+                    
+                    stream.Write(bytes, 0, bytes.Length);
+                    stream.Position = 0;
+
+                    DataContractSerializer deserializer = new DataContractSerializer(typeof(T));
+
+                    return (T)deserializer.ReadObject(stream);
+                }
             }
         }
     }
