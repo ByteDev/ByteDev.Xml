@@ -1,12 +1,12 @@
 # Release Notes
 
-## 1.1.0 - ?? August 2020
+## 2.0.0 - ?? October 2020
 
 Breaking changes:
-- (None)
+- Changes to `XmlDataSerializer` interface
 
 New features:
-- Added IEnumerable<XElement> Extensions
+- Added `XElementEnumerableExtensions`
 
 Bug fixes / internal changes:
 - (None)

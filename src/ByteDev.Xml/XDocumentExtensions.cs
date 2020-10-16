@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text;
 using System.Xml.Linq;
 
 namespace ByteDev.Xml
@@ -25,6 +26,14 @@ namespace ByteDev.Xml
                 throw new ArgumentException("Root name was null or empty.", nameof(rootName));
 
             return source.Root?.Name.LocalName == rootName;
+        }
+
+        internal static Encoding GetEncoding(this XDocument source)
+        {
+            if (source == null)
+                throw new ArgumentNullException(nameof(source));
+
+            return Encoding.GetEncoding(source.Declaration.Encoding);
         }
     }
 }

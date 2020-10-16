@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Runtime.Serialization;
+using System.Text;
+using System.Xml.Linq;
 using System.Xml.Serialization;
 using ByteDev.Xml.Serialization;
 using NUnit.Framework;
@@ -38,9 +40,19 @@ namespace ByteDev.Xml.UnitTests.Serialization
         {
             return CreateSut(type).Serialize(obj);
         }
- 
+
         [TestFixture]
-        public class Serialize : XmlDataSerializerTests
+        public class Constructor : XmlDataSerializerTests
+        {
+            [Test]
+            public void WhenTypeIsNotValid_ThenThrowException()
+            {
+                Assert.Throws<ArgumentException>(() => _ = new XmlDataSerializer((XmlSerializerType) 99));
+            }
+        }
+
+        [TestFixture]
+        public class Serialize_XmlSerializer : XmlDataSerializerTests
         {
             [Test]
             public void WhenArgIsNull_ThenThrowException()
@@ -78,6 +90,31 @@ namespace ByteDev.Xml.UnitTests.Serialization
                 Assert.That(result.IsXml(), Is.True);
             }
 
+            [Test]
+            public void WhenEncodingIsDefault_ThenSetEncodingToUtf16()  // (Unicode)
+            {
+                var product = new Product { Code = "code1", Name = "name1" };
+                
+                var result = CreateSut().Serialize(product);
+                
+                Assert.That(XDocument.Parse(result).GetEncoding(), Is.EqualTo(Encoding.Unicode));
+            }
+
+            [Test]
+            public void WhenEncodingIsNotDefault_ThenSerialize()
+            {
+                var product = new Product { Code = "code1", Name = "name1" };
+                
+                var result = CreateSut().Serialize(product, Encoding.UTF8);
+
+                Assert.That(result.IsXml(), Is.True);
+                Assert.That(XDocument.Parse(result).GetEncoding(), Is.EqualTo(Encoding.UTF8));
+            }
+        }
+
+        [TestFixture]
+        public class Serialize_DataContractSerializer : XmlDataSerializerTests
+        {
             [Test]
             public void WhenIsProductContract_ThenSerializeToXml()
             {
@@ -150,6 +187,8 @@ namespace ByteDev.Xml.UnitTests.Serialization
         }
     }
 
+    #region Test Types
+
     public class Customer
     {
         public string Name { get; set; }
@@ -181,4 +220,6 @@ namespace ByteDev.Xml.UnitTests.Serialization
         [DataMember] 
         public string Name { get; set; }
     }
+
+    #endregion
 }
