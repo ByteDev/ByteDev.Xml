@@ -24,24 +24,25 @@ Full details of the release notes can be viewed on [GitHub](https://github.com/B
 
 ## Usage
 
-XDocument Extensions:
+Extension methods:
 
+XDocument
 - IsRootName
 
-XElement Extensions:
-
+XElement
 - GetChildElement
 - GetChildElements
 - GetChildElementValue
+- GetChildElementValue<TValue>
 - GetAttributeValue
+- GetAttributeValue<TValue>
 - HasDescendants
 
-IEnumerable<XElement> Extensions:
+IEnumerable<XElement>
 - GetChildElement
 - GetChildElements
 
-String Extensions:
-
+String
 - IsXml
 - ContainsOnlyXmlChars
 
@@ -49,10 +50,7 @@ String Extensions:
 
 ### XmlDataSerializer
 
-`XmlDataSerializer` can be used for XML serialization (System.Xml.Serialization.XmlSerializer) or 
-XML data contract serialization (System.Runtime.Serialization.DataContractSerializer).
-
-Example of serialize/deserialize using XML serializer:
+Example of serializing and deserializing:
 
 ```csharp
 [XmlRoot("product")]
@@ -69,35 +67,11 @@ public class ProductXml
 
 var product = new ProductXml { Code = "code1", Name = "name1" };
 
-IXmlDataSerializer serializer = new XmlDataSerializer(XmlSerializerType.Xml);
+IXmlDataSerializer serializer = new XmlDataSerializer();
 
-var xml = serializer.Serialize(product);
+var xml = serializer.Serialize(product, Encoding.UTF8);
 
 var p = serializer.Deserialize<ProductXml>(xml);
-```
-
-Example of serialize/deserialize using data contract serializer:
-
-```csharp
-[DataContract]
-public class ProductContract
-{
-    [DataMember] 
-    public string Code { get; set; }
-
-    [DataMember] 
-    public string Name { get; set; }
-}
-
-// ...
-
-var product = new ProductContract { Code = "code1", Name = "name1" };
-
-IXmlDataSerializer serializer = new XmlDataSerializer(XmlSerializerType.DataContract);
-
-var xml = serializer.Serialize(product);
-
-var p = serializer.Deserialize<ProductContract>(xml);
 ```
 
 ---

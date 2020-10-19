@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Runtime.Serialization;
 using System.Text;
 using System.Xml.Linq;
 using System.Xml.Serialization;
@@ -26,29 +25,9 @@ namespace ByteDev.Xml.UnitTests.Serialization
             return new XmlDataSerializer();
         }
 
-        private static XmlDataSerializer CreateSut(XmlSerializerType type)
-        {
-            return new XmlDataSerializer(type);
-        }
-
         private static string SerializeToXml(object obj)
         {
             return CreateSut().Serialize(obj);
-        }
-
-        private static string SerializeToXml(object obj, XmlSerializerType type)
-        {
-            return CreateSut(type).Serialize(obj);
-        }
-
-        [TestFixture]
-        public class Constructor : XmlDataSerializerTests
-        {
-            [Test]
-            public void WhenTypeIsNotValid_ThenThrowException()
-            {
-                Assert.Throws<ArgumentException>(() => _ = new XmlDataSerializer((XmlSerializerType) 99));
-            }
         }
 
         [TestFixture]
@@ -101,7 +80,7 @@ namespace ByteDev.Xml.UnitTests.Serialization
             }
 
             [Test]
-            public void WhenEncodingIsNotDefault_ThenSerialize()
+            public void WhenEncodingIsNotDefault_ThenSetEncoding()
             {
                 var product = new Product { Code = "code1", Name = "name1" };
                 
@@ -109,20 +88,6 @@ namespace ByteDev.Xml.UnitTests.Serialization
 
                 Assert.That(result.IsXml(), Is.True);
                 Assert.That(XDocument.Parse(result).GetEncoding(), Is.EqualTo(Encoding.UTF8));
-            }
-        }
-
-        [TestFixture]
-        public class Serialize_DataContractSerializer : XmlDataSerializerTests
-        {
-            [Test]
-            public void WhenIsProductContract_ThenSerializeToXml()
-            {
-                var product = new ProductContract { Code = "code1", Name = "name1" };
-
-                var result = CreateSut(XmlSerializerType.DataContract).Serialize(product);
-
-                Assert.That(result.IsXml(), Is.True);
             }
         }
 
@@ -173,16 +138,18 @@ namespace ByteDev.Xml.UnitTests.Serialization
             }
 
             [Test]
-            public void WhenSerializedXmlIsProductContract_ThenDeserialize()
+            public void WhenEncodingNotDefault_ThenDeserialize()
             {
-                var product = new ProductContract { Code = "code1", Name = "name1" };
+                var product = new Product { Code = "code1", Name = "name1" };
 
-                var xml = SerializeToXml(product, XmlSerializerType.DataContract);
+                var sut = CreateSut();
 
-                var result = CreateSut(XmlSerializerType.DataContract).Deserialize<ProductContract>(xml);
+                var xml = sut.Serialize(product, Encoding.UTF8);
 
-                Assert.That(result.Code, Is.EqualTo(product.Code));
+                var result = sut.Deserialize<Product>(xml);
+
                 Assert.That(result.Name, Is.EqualTo(product.Name));
+                Assert.That(result.Code, Is.EqualTo(product.Code));
             }
         }
     }
@@ -208,16 +175,6 @@ namespace ByteDev.Xml.UnitTests.Serialization
         public string Code { get; set; }
 
         [XmlElement("name")]
-        public string Name { get; set; }
-    }
-
-    [DataContract]
-    public class ProductContract
-    {
-        [DataMember] 
-        public string Code { get; set; }
-
-        [DataMember] 
         public string Name { get; set; }
     }
 

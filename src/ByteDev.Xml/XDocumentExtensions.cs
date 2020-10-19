@@ -33,6 +33,9 @@ namespace ByteDev.Xml
             if (source == null)
                 throw new ArgumentNullException(nameof(source));
 
+            if (source.Declaration?.Encoding == null)
+                return null;
+
             return Encoding.GetEncoding(source.Declaration.Encoding);
         }
     }

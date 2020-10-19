@@ -1,5 +1,8 @@
 using System;
+using System.IO;
 using System.Text;
+using System.Xml;
+using System.Xml.Serialization;
 
 namespace ByteDev.Xml.Serialization
 {
@@ -8,29 +11,6 @@ namespace ByteDev.Xml.Serialization
     /// </summary>
     public class XmlDataSerializer : IXmlDataSerializer
     {
-        private readonly XmlSerializerType _type;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="T:ByteDev.Xml.Serialization.XmlDataSerializer" /> class
-        /// using <see cref="T:ByteDev.Xml.Serialization.XmlSerializerType.Xml" />.
-        /// </summary>
-        public XmlDataSerializer() : this(XmlSerializerType.Xml)
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="T:ByteDev.Xml.Serialization.XmlDataSerializer" /> class.
-        /// </summary>
-        /// <param name="type">Type of serializer to use.</param>
-        /// <exception cref="T:System.ArgumentException"><paramref name="type" /> is not valid.</exception>
-        public XmlDataSerializer(XmlSerializerType type)
-        {
-            if (!Enum.IsDefined(typeof(XmlSerializerType), type))
-                throw new ArgumentException("Serializer type is not valid.", nameof(type));
-
-            _type = type;
-        }
-
         /// <summary>
         /// Serializes a object to a XML string.
         /// </summary>
@@ -46,16 +26,21 @@ namespace ByteDev.Xml.Serialization
             if (encoding == null)
                 encoding = Encoding.Unicode;
 
-            switch (_type)
+            var xmlWriterSettings = new XmlWriterSettings
             {
-                case XmlSerializerType.Xml:
-                    return new MyXmlSerializer().Serialize(obj, encoding);
+                Encoding = encoding
+            };
 
-                case XmlSerializerType.DataContract:
-                    return new MyDataContractSerializer().Serialize(obj, encoding);
+            using (var sw = new StringWriterWithEncoding(encoding))
+            {
+                using (var xmlWriter = XmlWriter.Create(sw, xmlWriterSettings))
+                {
+                    var xmlSerializer = new XmlSerializer(obj.GetType());
 
-                default:
-                    throw new InvalidOperationException("Unhandled serializer type.");
+                    xmlSerializer.Serialize(xmlWriter, obj);
+                }
+
+                return sw.ToString();
             }
         }
 
@@ -70,16 +55,11 @@ namespace ByteDev.Xml.Serialization
             if (string.IsNullOrEmpty(xml))
                 return default;
 
-            switch (_type)
+            var xmlSerializer = new XmlSerializer(typeof(T));
+
+            using (var sr = new StringReader(xml))
             {
-                case XmlSerializerType.Xml:
-                    return new MyXmlSerializer().Deserialize<T>(xml);
-
-                case XmlSerializerType.DataContract:
-                    return new MyDataContractSerializer().Deserialize<T>(xml);
-
-                default:
-                    throw new InvalidOperationException("Unhandled serializer type.");
+                return (T)xmlSerializer.Deserialize(sr);
             }
         }
     }
