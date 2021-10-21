@@ -258,6 +258,36 @@ namespace ByteDev.Xml.UnitTests
         }
 
         [TestFixture]
+        public class HasAttribute : XElementExtensionsTests
+        {
+            [Test]
+            public void WhenIsNull_ThenThrowException()
+            {
+                Assert.Throws<ArgumentNullException>(() => XElementExtensions.HasAttribute(null, "type"));
+            }
+
+            [Test]
+            public void WhenDoesNotHaveAttribute_ThenReturnFalse()
+            {
+                var sut = CreateSut(@"<A>1</A><B type=""100"" />").GetChildElement("B");
+
+                var result = sut.HasAttribute("type2");
+
+                Assert.That(result, Is.False);
+            }
+
+            [Test]
+            public void WhenHasAttribute_ThenReturnTrue()
+            {
+                var sut = CreateSut(@"<A>1</A><B type=""100"" />").GetChildElement("B");
+
+                var result = sut.HasAttribute("type");
+
+                Assert.That(result, Is.True);
+            }
+        }
+
+        [TestFixture]
         public class HasDescendants : XElementExtensionsTests
         {
             private const string DoesntExistElement = "Address";

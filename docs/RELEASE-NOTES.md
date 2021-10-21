@@ -1,14 +1,26 @@
 # Release Notes
 
+## 2.1.0 - ?
+
+Breaking changes:
+- (None)
+
+New features:
+- Added `XElementExtensions.HasAttribute` method.
+
+Bug fixes / internal changes:
+- (None)
+
 ## 2.0.0 - 19 October 2020
 
 Breaking changes:
-- Changes to `XmlDataSerializer` interface
-- Removed `XmlSerializerType`
-- Removed functionality around XML data contract serialization
+- Changes to `XmlDataSerializer` interface.
+- Removed `XmlSerializerType`.
+- Removed functionality around XML data contract serialization.
 
 New features:
-- Added `XElementEnumerableExtensions`
+- Added `XElementEnumerableExtensions.GetChildElement` method.
+- Added `XElementEnumerableExtensions.GetChildElements` method.
 
 Bug fixes / internal changes:
 - (None)

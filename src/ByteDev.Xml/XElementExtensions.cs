@@ -125,6 +125,21 @@ namespace ByteDev.Xml
         }
 
         /// <summary>
+        /// Determines if an element has a specific attribute.
+        /// </summary>
+        /// <param name="source">XElement to perform the operation on.</param>
+        /// <param name="attributeName">Attribute name.</param>
+        /// <returns>True if the element has the attribute; otherwise false.</returns>
+        /// <exception cref="T:System.ArgumentNullException"><paramref name="source" /> is null.</exception>
+        public static bool HasAttribute(this XElement source, string attributeName)
+        {
+            if (source == null)
+                throw new ArgumentNullException(nameof(source));
+
+            return source.Attribute(attributeName) != null;
+        }
+
+        /// <summary>
         /// Indicates whether element has descendents.
         /// </summary>
         /// <param name="source">XElement to perform the operation on.</param>
